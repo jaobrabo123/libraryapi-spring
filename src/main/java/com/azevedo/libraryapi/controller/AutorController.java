@@ -6,6 +6,7 @@ import com.azevedo.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.azevedo.libraryapi.exceptions.RegistroDuplicadoException;
 import com.azevedo.libraryapi.model.Autor;
 import com.azevedo.libraryapi.service.AutorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AutorController {
     private final AutorService autorService;
 
     @PostMapping
-    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autor) {
+    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO autor) {
         try {
             Autor autorEntidade = autor.mapearParaAutor();
             autorService.salvar(autorEntidade);
@@ -78,7 +79,7 @@ public class AutorController {
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade
     ) {
-        List<Autor> resultado = autorService.pesquisa(nome, nacionalidade);
+        List<Autor> resultado = autorService.pesquisaByExample(nome, nacionalidade);
         List<AutorDTO> lista = resultado
                 .stream()
                 .map(autor -> new AutorDTO(
@@ -94,7 +95,7 @@ public class AutorController {
     @PutMapping("{id}")
     public ResponseEntity<Object> atualizar(
             @PathVariable("id") String id,
-            @RequestBody AutorDTO dto)
+            @RequestBody @Valid AutorDTO dto)
     {
         try {
             UUID idAutor = UUID.fromString(id);
