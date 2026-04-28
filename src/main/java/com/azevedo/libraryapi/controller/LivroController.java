@@ -8,13 +8,12 @@ import com.azevedo.libraryapi.model.Livro;
 import com.azevedo.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/livros")
@@ -53,20 +52,42 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> pesquisa(
+    public ResponseEntity<Page<ResultadoPesquisaLivroDTO>> pesquisa(
             @RequestParam(required = false) String isbn,
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String nomeAutor,
             @RequestParam(required = false) GeneroLivro genero,
-            @RequestParam(required = false) Integer anoPublicacao
+            @RequestParam(required = false) Integer anoPublicacao,
+            @RequestParam(defaultValue = "0") Integer pagina,
+            @RequestParam(defaultValue = "10") Integer tamanhoPagina
     ){
-        var resultado = livroService.pesquisa(isbn, titulo, nomeAutor, genero, anoPublicacao);
-        List<ResultadoPesquisaLivroDTO> lista = resultado
-                .stream()
-                .map(livroMapper::toDTO)
-                .collect(Collectors.toList());
+        var paginaResultado = livroService.pesquisa(isbn, titulo, nomeAutor, genero, anoPublicacao, pagina, tamanhoPagina);
 
-        return ResponseEntity.ok(lista);
+        Page<ResultadoPesquisaLivroDTO> resultado = paginaResultado.map(livroMapper::toDTO);
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Object> atualizar(
+            @PathVariable String id,
+            @RequestBody @Valid CadastroLivroDTO dto
+    ) {
+        return livroService.obterPorId(UUID.fromString(id))
+                .map(livro -> {
+                    Livro entidadeAux = livroMapper.toEntity(dto);
+
+                    livro.setDataPublicacao(entidadeAux.getDataPublicacao());
+                    livro.setIsbn(entidadeAux.getIsbn());
+                    livro.setPreco(entidadeAux.getPreco());
+                    livro.setGenero(entidadeAux.getGenero());
+                    livro.setTitulo(entidadeAux.getTitulo());
+                    livro.setAutor(entidadeAux.getAutor());
+
+                    livroService.atualizar(livro);
+
+                    return ResponseEntity.noContent().build();
+                }).orElseGet(()->ResponseEntity.notFound().build());
     }
 
 }
