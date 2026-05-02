@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4e73df, #224abe);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .form-control {
+            padding-left: 2.5rem;
+        }
+
+        .input-group-text {
+            position: absolute;
+            z-index: 10;
+            height: 100%;
+            border: none;
+            background: transparent;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .btn-primary {
+            transition: 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+
+    <h3 class="text-center mb-4">🔐 Login</h3>
+
+    <!-- Erro de login -->
+    <div th:if="${param.error}" class="alert alert-danger text-center">
+        Usuário ou senha inválidos
+    </div>
+
+    <!-- Logout -->
+    <div th:if="${param.logout}" class="alert alert-success text-center">
+        Logout realizado com sucesso
+    </div>
+
+    <form method="post" th:action="@{/login}" onsubmit="handleLogin(event)">
+
+        <div class="mb-3 input-wrapper">
+            <span class="input-group-text">
+                <i class="bi bi-person"></i>
+            </span>
+            <input type="text" class="form-control" name="username" placeholder="Usuário" required>
+        </div>
+
+        <div class="mb-3 input-wrapper">
+            <span class="input-group-text">
+                <i class="bi bi-lock"></i>
+            </span>
+            <input type="password" class="form-control" name="password" placeholder="Senha" required>
+        </div>
+
+        <button id="loginBtn" type="submit" class="btn btn-primary w-100">
+            Entrar
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+    function handleLogin(e) {
+        const btn = document.getElementById("loginBtn");
+        btn.innerHTML = "Entrando...";
+        btn.disabled = true;
+    }
+</script>
+
+</body>
+</html>
