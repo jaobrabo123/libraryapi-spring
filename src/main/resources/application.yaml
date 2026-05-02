@@ -5,7 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5433/library
     username: postgres
     password: senha
-    driver-class-name: org.postgresql.Driver # Declarar o driver é opcional pois já detecta do pom.xml
+    driver-class-name: org.postgresql.Driver # Declarar o driver é opcional, pois já detecta do pom.xml
   jpa:
     show-sql: true
     properties:
