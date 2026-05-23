@@ -2,8 +2,10 @@ package com.azevedo.libraryapi.service;
 
 import com.azevedo.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.azevedo.libraryapi.model.Autor;
+import com.azevedo.libraryapi.model.Usuario;
 import com.azevedo.libraryapi.repository.AutorRepository;
 import com.azevedo.libraryapi.repository.LivroRepository;
+import com.azevedo.libraryapi.security.SecurityService;
 import com.azevedo.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -21,6 +23,7 @@ public class AutorService {
     private final AutorRepository autorRepository;
     private final AutorValidator autorValidator;
     private final LivroRepository livroRepository;
+    private final SecurityService securityService;
 
 //    public AutorService(AutorRepository autorRepository, AutorValidator autorValidator, LivroRepository livroRepository){
 //        this.autorRepository = autorRepository;
@@ -30,6 +33,8 @@ public class AutorService {
 
     public Autor salvar(Autor autor){
         autorValidator.validar(autor);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        autor.setUsuario(usuario);
         return autorRepository.save(autor);
     }
 
